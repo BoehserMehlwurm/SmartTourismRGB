@@ -1,3 +1,12 @@
 <resources>
-    <string name="app_name">SmartTourismRGB</string>
+    <string name="app_name">Smart Tourism RGB</string>
+    <string name="button_StartApplication">Start Smart Tourism RGB</string>
+    <string name="button_location">Add Location</string>
+    <string name="button_addPlacemark">Add Placemark</string>
+    <string name="button_addImage">Add Image</string>
+    <string name="hint_placemarkDescription">Description</string>
+    <string name="hint_placemarkTitle">Title</string>
+    <string name="menu_addPlacemark">Add</string>
+    <string name="menu_cancelPlacemark">Cancel</string>
+    <string name="menu_info">Info</string>
 </resources>

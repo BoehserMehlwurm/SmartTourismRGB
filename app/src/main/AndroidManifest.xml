@@ -3,6 +3,7 @@
     package="com.example.smarttourismrgb">
 
     <application
+        android:name="main.MainApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -10,11 +11,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SmartTourismRGB">
         <activity
-            android:name=".MainActivity"
+            android:name="activities.PlacemarkListActivity"
+            android:exported="true"
+            android:parentActivityName="activities.StartActivity">
+        </activity>
+        <activity
+            android:name="activities.PlacemarkActivity"
+            android:exported="true" />
+        <activity
+            android:name="activities.StartActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
