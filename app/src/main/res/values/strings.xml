@@ -2,11 +2,15 @@
     <string name="app_name">Smart Tourism RGB</string>
     <string name="button_StartApplication">Start Smart Tourism RGB</string>
     <string name="button_location">Add Location</string>
-    <string name="button_addPlacemark">Add Placemark</string>
+    <string name="button_addPlacemark">Add Interesting Place</string>
     <string name="button_addImage">Add Image</string>
     <string name="hint_placemarkDescription">Description</string>
     <string name="hint_placemarkTitle">Title</string>
     <string name="menu_addPlacemark">Add</string>
     <string name="menu_cancelPlacemark">Cancel</string>
     <string name="menu_info">Info</string>
+    <string name="enter_placemark_title">Please enter a Placemark title</string>
+    <string name="save_placemark">Save Placemark</string>
+    <string name="select_placemark_image">Select placemark image</string>
+    <string name="change_placemark_image">Change placemark image</string>
 </resources>
