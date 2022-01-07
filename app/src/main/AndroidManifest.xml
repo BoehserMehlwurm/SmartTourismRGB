@@ -16,6 +16,11 @@
             android:parentActivityName="activities.StartActivity">
         </activity>
         <activity
+        android:name="activities.InfoActivity"
+        android:exported="true"
+        android:parentActivityName="activities.StartActivity">
+        </activity>
+        <activity
             android:name="activities.PlacemarkActivity"
             android:exported="true" />
         <activity
