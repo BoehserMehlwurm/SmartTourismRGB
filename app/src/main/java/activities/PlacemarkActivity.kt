@@ -14,6 +14,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.squareup.picasso.Picasso
 import helpers.showImagePicker
 import main.MainApp
+import models.Location
 import models.PlacemarkModel
 import timber.log.Timber
 import timber.log.Timber.i
@@ -23,7 +24,9 @@ class PlacemarkActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPlacemarkBinding
     var placemark = PlacemarkModel()
     lateinit var app : MainApp
-    private lateinit var imageIntentLauncher: ActivityResultLauncher<Intent>
+    var location = Location(49.01, 12.10, 15f)
+    private lateinit var imageIntentLauncher: ActivityResultLauncher<Intent> //embedding image choosing activity
+    private lateinit var mapIntentLauncher: ActivityResultLauncher<Intent> //embedding google maps activity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,11 +77,16 @@ class PlacemarkActivity : AppCompatActivity() {
 
         binding.chooseImage.setOnClickListener {
             showImagePicker(imageIntentLauncher)
-            // showImagePicker(imageIntentLauncher)
+
         }
         registerImagePickerCallback()
 
-
+        binding.placemarkLocation.setOnClickListener{
+            val launcherIntent = Intent(this, MapActivity::class.java)
+                .putExtra("location", location)
+            mapIntentLauncher.launch(launcherIntent)
+        }
+        registerMapCallback()
     }
 
 
@@ -115,6 +123,24 @@ class PlacemarkActivity : AppCompatActivity() {
                 RESULT_CANCELED -> { } else -> { }
             }
         }
+    }
+
+    private fun registerMapCallback() {
+        mapIntentLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult())
+            { result ->
+                when (result.resultCode) {
+                    RESULT_OK -> {
+                        if (result.data != null) {
+                            i("Got Location ${result.data.toString()}")
+                            location = result.data!!.extras?.getParcelable("location")!!
+                            i("Location == $location")
+                        } // end of if
+                    }
+                    RESULT_CANCELED -> {}
+                    else -> {}
+                }
+            }
     }
 
 }

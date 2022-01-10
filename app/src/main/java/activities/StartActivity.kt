@@ -26,7 +26,6 @@ class StartActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbarAdd)
 
         Timber.plant(Timber.DebugTree())
-
         i("Smart Tourism App started...")
 
         //actionBar!!.title = "PlacemarkList Activity"
@@ -37,6 +36,19 @@ class StartActivity : AppCompatActivity() {
             startActivity(intent)
 
         }
+
+        binding.blankbuttonID1.setOnClickListener(){
+            i("Blankbutton1 pressed")
+        }
+        binding.blankbuttonID2.setOnClickListener(){
+            i("Blankbutton1 pressed")
+        }
+        binding.blankbuttonID3.setOnClickListener(){
+            i("Blankbutton1 pressed")
+        }
+
+
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean { //inflate menu toolbar (kind of)

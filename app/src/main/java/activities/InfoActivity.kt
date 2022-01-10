@@ -27,6 +27,7 @@ class InfoActivity : AppCompatActivity() {
 
 
             app = application as MainApp
+
             Timber.i("Info Page visited...")
 
             supportActionBar?.apply {
