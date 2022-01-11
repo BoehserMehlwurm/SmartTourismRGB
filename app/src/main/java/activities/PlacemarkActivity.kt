@@ -2,12 +2,13 @@ package activities
 
 import android.content.Intent
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.get
 import com.example.smarttourismrgb.R
 import com.example.smarttourismrgb.databinding.ActivityPlacemarkBinding
 import com.google.android.material.snackbar.Snackbar
@@ -16,7 +17,6 @@ import helpers.showImagePicker
 import main.MainApp
 import models.Location
 import models.PlacemarkModel
-import timber.log.Timber
 import timber.log.Timber.i
 
 class PlacemarkActivity : AppCompatActivity() {
@@ -26,9 +26,12 @@ class PlacemarkActivity : AppCompatActivity() {
     lateinit var app : MainApp
     private lateinit var imageIntentLauncher: ActivityResultLauncher<Intent> //embedding image choosing activity
     private lateinit var mapIntentLauncher: ActivityResultLauncher<Intent> //embedding google maps activity
+    private var edit = false // flag for a placemark, will be changed when it goes in the edit aka hasExtra if
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        invalidateOptionsMenu()
 
         binding = ActivityPlacemarkBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -36,7 +39,7 @@ class PlacemarkActivity : AppCompatActivity() {
         binding.toolbarAdd.title = title
         setSupportActionBar(binding.toolbarAdd)
 
-        var edit = false // flag for a placemark, will be changed when it goes in the edit aka hasExtra if
+
 
         app = application as MainApp
         i("Placemark Activity started...")
@@ -98,6 +101,16 @@ class PlacemarkActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_placemark, menu)
+
+        //if (edit == true) { //if flag edit is set to true, then make the delete Button visible
+         //   menu.getItem(R.id.item_delete).isVisible = false }
+
+        if(edit == true){
+            //menu.getItem(R.id.item_delete).isVisible = true
+            val menuItem = menu.findItem(R.id.item_delete)
+            menuItem.setVisible(true)
+        }
+
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -107,6 +120,14 @@ class PlacemarkActivity : AppCompatActivity() {
                 finish()
             }
         }
+        when(item.itemId){
+            R.id.item_delete -> {
+                app.placemarks.delete(placemark)
+                finish()
+            }
+        }
+
+
         return super.onOptionsItemSelected(item)
     }
 

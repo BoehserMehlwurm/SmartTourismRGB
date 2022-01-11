@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.ViewGroup
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,13 +25,17 @@ class PlacemarkListActivity : AppCompatActivity(), PlacemarkListener {
 
     lateinit var app: MainApp
     private lateinit var binding: ActivityPlacemarkListBinding
+    private lateinit var refreshIntentLauncher : ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
         binding = ActivityPlacemarkListBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.toolbar.title = title
         setSupportActionBar(binding.toolbar)
+
 
         supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
@@ -38,16 +43,15 @@ class PlacemarkListActivity : AppCompatActivity(), PlacemarkListener {
             //Back Button to StartActivity
         }
 
-
-
         app = application as MainApp
 
         val layoutManager = LinearLayoutManager(this)
         binding.recyclerView.layoutManager = layoutManager
-        binding.recyclerView.adapter = PlacemarkAdapter(app.placemarks.findAll(),this)
+        //binding.recyclerView.adapter = PlacemarkAdapter(app.placemarks.findAll(),this)
+        loadPlacemarks()
+
+        registerRefreshCallback()
     }
-
-
 
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -60,7 +64,7 @@ class PlacemarkListActivity : AppCompatActivity(), PlacemarkListener {
             R.id.item_add -> {
                 val launcherIntent = Intent(this, PlacemarkActivity::class.java)
                 //startActivity(launcherIntent) // see comment underneath at onPlacemarkClick
-                refresh.launch(launcherIntent)
+                refreshIntentLauncher.launch(launcherIntent)
             }
         }
         return super.onOptionsItemSelected(item)
@@ -70,19 +74,38 @@ class PlacemarkListActivity : AppCompatActivity(), PlacemarkListener {
         val launcherIntent = Intent(this, PlacemarkActivity::class.java)
         launcherIntent.putExtra("placemark_edit", placemark) //through parcelable the clicked placemark goes to Placemarkactivity
         //startActivity(launcherIntent) //should be startActivityForResult, but is deprecated. Used startActivity till I fixed it with getResult underneath
-        refresh.launch(launcherIntent)
+        refreshIntentLauncher.launch(launcherIntent)
     }
 
-    private val refresh = registerForActivityResult(ActivityResultContracts.StartActivityForResult())
+
+    private fun registerRefreshCallback() {
+        refreshIntentLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult())
+            { loadPlacemarks() }
+    }
+
+    /*private val refresh = registerForActivityResult(ActivityResultContracts.StartActivityForResult())
         {if(it.resultCode == Activity.RESULT_OK) {
             binding.recyclerView.adapter?.notifyDataSetChanged()} //updates the view if code result is OK
            //val value = it.data?.getStringExtra("input")} //got the code from a MongoDB Articel about the deprecated onActivityResult
             //effort was not needed, changed in the labs as well.
-        }
-
+       }
+    **/
     //override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
        // binding.recyclerView.adapter?.notifyDataSetChanged()
         //super.onActivityResult(requestCode, resultCode, data) }
+
+
+
+    private fun loadPlacemarks() {
+        showPlacemarks(app.placemarks.findAll())
+    }
+
+    fun showPlacemarks (placemarks: List<PlacemarkModel>) {
+        binding.recyclerView.adapter = PlacemarkAdapter(placemarks, this)
+        binding.recyclerView.adapter?.notifyDataSetChanged()
+    }
+
+
 }
 
 
