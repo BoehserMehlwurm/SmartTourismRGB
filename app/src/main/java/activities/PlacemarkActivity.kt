@@ -102,13 +102,10 @@ class PlacemarkActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_placemark, menu)
 
-        //if (edit == true) { //if flag edit is set to true, then make the delete Button visible
-         //   menu.getItem(R.id.item_delete).isVisible = false }
-
         if(edit == true){
-            //menu.getItem(R.id.item_delete).isVisible = true
-            val menuItem = menu.findItem(R.id.item_delete)
-            menuItem.setVisible(true)
+            menu.findItem(R.id.item_delete).isVisible = true
+            //val menuItem = menu.findItem(R.id.item_delete) does it as well
+            //menuItem.setVisible(true)
         }
 
         return super.onCreateOptionsMenu(menu)

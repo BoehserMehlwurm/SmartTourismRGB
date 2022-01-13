@@ -37,8 +37,10 @@ class StartActivity : AppCompatActivity() {
 
         }
 
-        binding.blankbuttonID1.setOnClickListener(){
-            i("Blankbutton1 pressed")
+        binding.arexperience.setOnClickListener(){
+            i("AR Experience pressed")
+            val intent = Intent(this, ArActivity::class.java)
+            startActivity(intent)
         }
         binding.blankbuttonID2.setOnClickListener(){
             i("Blankbutton1 pressed")
