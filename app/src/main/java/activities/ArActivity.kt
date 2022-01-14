@@ -35,10 +35,11 @@ import retrofit2.Response
 import models.Place
 import models.getPositionVector
 import timber.log.Timber
+import timber.log.Timber.*
 
 class ArActivity : AppCompatActivity(), SensorEventListener {
 
-    private val TAG = "ArActivity"
+    //private val TAG = "ArActivity"
 
     private lateinit var placesService: PlacesService
     private lateinit var arFragment: PlacesArFragment
@@ -67,14 +68,13 @@ class ArActivity : AppCompatActivity(), SensorEventListener {
             return
         }
 
-        Timber.plant(Timber.DebugTree())
+        plant(DebugTree())
         binding = inflate(layoutInflater)
         setContentView(binding.root)
 
 
         arFragment = supportFragmentManager.findFragmentById(R.id.ar_fragment) as PlacesArFragment
-        mapFragment =
-            supportFragmentManager.findFragmentById(R.id.maps_fragment) as SupportMapFragment
+        mapFragment = supportFragmentManager.findFragmentById(R.id.maps_fragment) as SupportMapFragment
 
         sensorManager = getSystemService()!!
         placesService = PlacesService.create()
@@ -119,8 +119,8 @@ class ArActivity : AppCompatActivity(), SensorEventListener {
     private fun addPlaces(anchorNode: AnchorNode) {
         val currentLocation = currentLocation
         if (currentLocation == null) {
-            Log.w(TAG, "Location has not been determined yet")
-            //Timber.i("Location has not been determined yet")
+            //Log.w(TAG, "Location has not been determined yet")
+            i("Location has not been determined yet")
             return
         }
 
@@ -128,7 +128,8 @@ class ArActivity : AppCompatActivity(), SensorEventListener {
         if (places == null) {
 
             //Timber.i("No places to put")
-            Log.w(TAG, "No places to put")
+            //Log.w(TAG, "No places to put")
+            i("No places to put")
             return
         }
 
@@ -180,7 +181,7 @@ class ArActivity : AppCompatActivity(), SensorEventListener {
             getCurrentLocation {
                 val pos = CameraPosition.fromLatLngZoom(it.latLng, 13f)
                 googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(pos))
-                getNearbyPlaces(it)
+                //getNearbyPlaces(it)
             }
             googleMap.setOnMarkerClickListener { marker ->
                 val tag = marker.tag
@@ -199,8 +200,8 @@ class ArActivity : AppCompatActivity(), SensorEventListener {
             currentLocation = location
             onSuccess(location)
         }.addOnFailureListener {
-            //Timber.i("Could not get location")
-            Log.e(TAG, "Could not get location")
+            i("Could not get location")
+            //Log.e(TAG, "Could not get location")
         }
     }
 
@@ -214,8 +215,8 @@ class ArActivity : AppCompatActivity(), SensorEventListener {
         ).enqueue(
             object : Callback<NearbyPlacesResponse> {
                 override fun onFailure(call: Call<NearbyPlacesResponse>, t: Throwable) {
-                    Log.e(TAG, "Failed to get nearby places", t)
-                    //Timber.i("Failed to get nearby places")
+                    //Log.e(TAG, "Failed to get nearby places", t)
+                    i("Failed to get nearby places")
                 }
 
                 override fun onResponse(
@@ -223,8 +224,8 @@ class ArActivity : AppCompatActivity(), SensorEventListener {
                     response: Response<NearbyPlacesResponse>
                 ) {
                     if (!response.isSuccessful) {
-                        Log.e(TAG, "Failed to get nearby places")
-                        //Timber.i("Failed to get nearby places")
+                        //Log.e(TAG, "Failed to get nearby places")
+                        i("Failed to get nearby places")
                         return
                     }
 
@@ -236,7 +237,7 @@ class ArActivity : AppCompatActivity(), SensorEventListener {
     }
 
 
-    private fun isSupportedDevice(): Boolean {
+    private fun isSupportedDevice(): Boolean { //checks the device OpenGL ES Version
         val activityManager = getSystemService(ACTIVITY_SERVICE) as ActivityManager
         val openGlVersionString = activityManager.deviceConfigurationInfo.glEsVersion
         if (openGlVersionString.toDouble() < 3.0) {

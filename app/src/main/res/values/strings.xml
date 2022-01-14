@@ -22,4 +22,5 @@
     <string name="map_goback">Set Location</string>
     <string name="delete">Delete</string>
     <string name="placename_textview">TEST</string>
+    <string name="map_set_postion">Set Position</string>
 </resources>

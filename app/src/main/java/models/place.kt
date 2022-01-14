@@ -33,6 +33,7 @@ data class Place(
     val name: String,
     val geometry: @RawValue Geometry
 ) : Parcelable {
+
     override fun equals(other: Any?): Boolean {
         if (other !is Place) {
             return false

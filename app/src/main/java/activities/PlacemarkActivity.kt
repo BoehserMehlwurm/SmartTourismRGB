@@ -15,7 +15,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.squareup.picasso.Picasso
 import helpers.showImagePicker
 import main.MainApp
-import models.Location
+import models.Locationsave
 import models.PlacemarkModel
 import timber.log.Timber.i
 
@@ -84,7 +84,7 @@ class PlacemarkActivity : AppCompatActivity() {
         registerImagePickerCallback()
 
         binding.placemarkLocation.setOnClickListener{
-            val location = Location(49.01, 12.10, 15f)
+            val location = Locationsave(49.01, 12.10, 15f)
             if(placemark.zoom != 0f) {
                 location.lat =  placemark.lat
                 location.lng = placemark.lng
@@ -156,7 +156,7 @@ class PlacemarkActivity : AppCompatActivity() {
                     RESULT_OK -> {
                         if (result.data != null) {
                             i("Got Location ${result.data.toString()}")
-                            val location = result.data!!.extras?.getParcelable<Location>("location")!!
+                            val location = result.data!!.extras?.getParcelable<Locationsave>("location")!!
                             i("Location == $location")
                             placemark.lat = location.lat
                             placemark.lng = location.lng
