@@ -98,18 +98,28 @@
                     android:textColor="@color/colorPrimary"
                     android:textSize="16sp"/>
 
+                <TextView
+                    android:id="@+id/locationInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text=""/>
+
                 <Button
                     android:id="@+id/btnAdd"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="16dp"
-                    android:background="@color/colorAccent"
+                    app:backgroundTint="@null"
+                    android:background="@color/teal_700"
                     android:paddingTop="8dp"
                     android:paddingBottom="8dp"
                     android:stateListAnimator="@null"
                     android:text="@string/button_addPlacemark"
                     android:textColor="@color/colorPrimary"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    android:gravity="center" />
+
             </LinearLayout>
         </ScrollView>
 

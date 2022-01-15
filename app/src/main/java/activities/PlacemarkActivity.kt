@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -50,6 +51,8 @@ class PlacemarkActivity : AppCompatActivity() {
             binding.btnAdd.setText(R.string.save_placemark)
             binding.placemarkTitle.setText(placemark.title)
             binding.description.setText(placemark.description)
+            binding.locationInfo.text = placemark.address //preview of the address in the placemark
+            binding.placemarkLocation.text = "Change Location"
             Picasso.get()
                 .load(placemark.image)
                 .into(binding.placemarkImage)
@@ -57,9 +60,10 @@ class PlacemarkActivity : AppCompatActivity() {
                 binding.chooseImage.setText(R.string.change_placemark_image) //use other string when there was a picture. Therefore change button to change
             }
 
+
         }
 
-        binding.btnAdd.setOnClickListener() {
+        binding.btnAdd.setOnClickListener {
             placemark.title = binding.placemarkTitle.text.toString()
             placemark.description = binding.description.text.toString()
             if (placemark.title.isEmpty()) {
@@ -76,6 +80,7 @@ class PlacemarkActivity : AppCompatActivity() {
             setResult(RESULT_OK)
             finish()
         }
+
 
         binding.chooseImage.setOnClickListener {
             showImagePicker(imageIntentLauncher)
@@ -99,6 +104,7 @@ class PlacemarkActivity : AppCompatActivity() {
             i("inside setOnCLicker Location"+location.lat.toString())
             i("inside setOnClicker Placemark"+placemark.lat.toString())
         }
+
         registerMapCallback()
     }
 
@@ -166,6 +172,9 @@ class PlacemarkActivity : AppCompatActivity() {
                             placemark.lng = location.lng
                             placemark.zoom = location.zoom
                             placemark.address = location.address
+
+                            binding.placemarkLocation.text = "Change Location"
+                            binding.locationInfo.text = placemark.address //show the address as kind of preview in the placemark
 
                             i("inside registerMapCallback Location"+location.lat.toString())
                             i("inside registerMapCallback Placemark"+placemark.lat.toString())
