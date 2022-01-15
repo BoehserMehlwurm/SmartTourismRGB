@@ -13,7 +13,7 @@ tools:context="activities.MapActivity" >
     tools:context="activities.MapActivity" />
 
     <Button
-        android:id="@+id/set_position"
+        android:id="@+id/btn_set"
         android:layout_width="150dp"
         android:layout_height="70dp"
         android:text="@string/map_set_postion"

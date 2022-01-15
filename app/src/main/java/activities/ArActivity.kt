@@ -12,8 +12,8 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.getSystemService
-import api.NearbyPlacesResponse
-import api.PlacesService
+//import api.NearbyPlacesResponse
+//import api.PlacesService
 import ar.PlaceNode
 import ar.PlacesArFragment
 import com.example.smarttourismrgb.R
@@ -32,8 +32,8 @@ import com.google.ar.sceneform.AnchorNode
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import models.Place
-import models.getPositionVector
+//import models.Place
+//import models.getPositionVector
 import timber.log.Timber
 import timber.log.Timber.*
 
@@ -41,7 +41,7 @@ class ArActivity : AppCompatActivity(), SensorEventListener {
 
     //private val TAG = "ArActivity"
 
-    private lateinit var placesService: PlacesService
+    //private lateinit var placesService: PlacesService
     private lateinit var arFragment: PlacesArFragment
     private lateinit var mapFragment: SupportMapFragment
     private lateinit var binding: ActivityArBinding
@@ -58,7 +58,7 @@ class ArActivity : AppCompatActivity(), SensorEventListener {
 
     private var anchorNode: AnchorNode? = null
     private var markers: MutableList<Marker> = emptyList<Marker>().toMutableList()
-    private var places: List<Place>? = null
+    //private var places: List<Place>? = null commented out cause of the unused place model
     private var currentLocation: Location? = null
     private var map: GoogleMap? = null
 
@@ -77,7 +77,7 @@ class ArActivity : AppCompatActivity(), SensorEventListener {
         mapFragment = supportFragmentManager.findFragmentById(R.id.maps_fragment) as SupportMapFragment
 
         sensorManager = getSystemService()!!
-        placesService = PlacesService.create()
+        //placesService = PlacesService.create()
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         setUpAr()
@@ -123,7 +123,7 @@ class ArActivity : AppCompatActivity(), SensorEventListener {
             i("Location has not been determined yet")
             return
         }
-
+/**
         val places = places
         if (places == null) {
 
@@ -139,7 +139,7 @@ class ArActivity : AppCompatActivity(), SensorEventListener {
             placeNode.setParent(anchorNode)
             placeNode.localPosition = place.getPositionVector(orientationAngles[0], currentLocation.latLng)
             placeNode.setOnTapListener { _, _ ->
-                showInfoWindow(place)
+              //  showInfoWindow(place) commented out cause of the unused place model
             }
 
             // Add the place in maps
@@ -152,11 +152,12 @@ class ArActivity : AppCompatActivity(), SensorEventListener {
                 marker!!.tag = place
                 markers.add(marker)
             }
-        }
+        }*/
     }
-
+    /**
     private fun showInfoWindow(place: Place) {
         // Show in AR
+
         val matchingPlaceNode = anchorNode?.children?.filter {
             it is PlaceNode
         }?.first {
@@ -169,9 +170,9 @@ class ArActivity : AppCompatActivity(), SensorEventListener {
         val matchingMarker = markers.firstOrNull {
             val placeTag = (it.tag as? Place) ?: return@firstOrNull false
             return@firstOrNull placeTag == place
-        }
+        }  //commented out cause of the unused place model
         matchingMarker?.showInfoWindow()
-    }
+    }*/
 
 
     private fun setUpMaps() {
@@ -185,10 +186,10 @@ class ArActivity : AppCompatActivity(), SensorEventListener {
             }
             googleMap.setOnMarkerClickListener { marker ->
                 val tag = marker.tag
-                if (tag !is Place) {
-                    return@setOnMarkerClickListener false
-                }
-                showInfoWindow(tag)
+                //if (tag !is Place) { //commented out cause of the unused place model
+                 //   return@setOnMarkerClickListener false
+                //}
+                //showInfoWindow(tag)
                 return@setOnMarkerClickListener true
             }
             map = googleMap
@@ -204,7 +205,7 @@ class ArActivity : AppCompatActivity(), SensorEventListener {
             //Log.e(TAG, "Could not get location")
         }
     }
-
+/**
     private fun getNearbyPlaces(location: Location) {
         val apiKey = resources.getResourceName(R.string.google_maps_key)
         placesService.nearbyPlaces(
@@ -229,12 +230,12 @@ class ArActivity : AppCompatActivity(), SensorEventListener {
                         return
                     }
 
-                    val places = response.body()?.results ?: emptyList()
-                    this@ArActivity.places = places
+                    //val places = response.body()?.results ?: emptyList()
+                    //this@ArActivity.places = places
                 }
             }
         )
-    }
+    }*/
 
 
     private fun isSupportedDevice(): Boolean { //checks the device OpenGL ES Version

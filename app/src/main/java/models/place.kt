@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+
+
 package models
 
 import android.os.Parcelable
@@ -25,7 +27,7 @@ import kotlin.math.sin
 
 /**
  * A model describing details about a Place (location, name, type, etc.).
- */
+
 @Parcelize
 data class Place(
     val id: String,
@@ -68,3 +70,4 @@ data class GeometryLocation(
     val latLng: LatLng
         get() = LatLng(lat, lng)
 }
+ */

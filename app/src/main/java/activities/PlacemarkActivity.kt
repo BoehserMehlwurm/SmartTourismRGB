@@ -84,15 +84,20 @@ class PlacemarkActivity : AppCompatActivity() {
         registerImagePickerCallback()
 
         binding.placemarkLocation.setOnClickListener{
+
             val location = Locationsave(49.01, 12.10, 15f)
             if(placemark.zoom != 0f) {
                 location.lat =  placemark.lat
                 location.lng = placemark.lng
                 location.zoom = placemark.zoom
+                location.address = placemark.address
             }
+
             val launcherIntent = Intent(this, MapActivity::class.java)
                 .putExtra("location", location)
             mapIntentLauncher.launch(launcherIntent)
+            i("inside setOnCLicker Location"+location.lat.toString())
+            i("inside setOnClicker Placemark"+placemark.lat.toString())
         }
         registerMapCallback()
     }
@@ -149,8 +154,7 @@ class PlacemarkActivity : AppCompatActivity() {
     }
 
     private fun registerMapCallback() {
-        mapIntentLauncher =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult())
+        mapIntentLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult())
             { result ->
                 when (result.resultCode) {
                     RESULT_OK -> {
@@ -161,6 +165,10 @@ class PlacemarkActivity : AppCompatActivity() {
                             placemark.lat = location.lat
                             placemark.lng = location.lng
                             placemark.zoom = location.zoom
+                            placemark.address = location.address
+
+                            i("inside registerMapCallback Location"+location.lat.toString())
+                            i("inside registerMapCallback Placemark"+placemark.lat.toString())
                         } // end of if
                     }
                     RESULT_CANCELED -> {}

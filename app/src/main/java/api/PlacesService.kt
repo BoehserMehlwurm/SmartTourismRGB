@@ -12,7 +12,7 @@ import retrofit2.http.Query
  * Interface definition for a service that interacts with the Places API.
  *
  * @see [Place Search](https://developers.google.com/places/web-service/search)
- */
+
 interface PlacesService {
 
     @GET("nearbysearch/json")
@@ -43,4 +43,4 @@ interface PlacesService {
         }
     }
 
-}
+}*/

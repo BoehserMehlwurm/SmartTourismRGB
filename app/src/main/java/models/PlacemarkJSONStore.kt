@@ -42,7 +42,7 @@ class PlacemarkJSONStore(private val context: Context) : PlacemarkStore {
         serialize()
     }
 
-    override fun update(placemark: PlacemarkModel) { //erstmal von MemStore kopiert
+    override fun update(placemark: PlacemarkModel) {
         val foundPlacemark: PlacemarkModel? = placemarks.find { p -> p.id == placemark.id }
         if (foundPlacemark != null) {
             foundPlacemark.title = placemark.title
@@ -51,6 +51,7 @@ class PlacemarkJSONStore(private val context: Context) : PlacemarkStore {
             foundPlacemark.lat = placemark.lat
             foundPlacemark.lng = placemark.lng
             foundPlacemark.zoom = placemark.zoom
+            foundPlacemark.address = placemark.address
             serialize()
             logAll()
         }

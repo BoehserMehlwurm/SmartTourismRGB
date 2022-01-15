@@ -17,10 +17,12 @@ data class PlacemarkModel(var id: Long = 0,
                           var image: Uri = Uri.EMPTY,
                           var lat : Double = 0.0,
                           var lng: Double = 0.0,
-                          var zoom: Float = 0f) : Parcelable
+                          var zoom: Float = 0f,
+                          var address: String = "") : Parcelable
 
 @Parcelize
 data class Locationsave(var lat: Double = 0.0,
-                    var lng: Double = 0.0,
-                    var zoom: Float = 0f) : Parcelable
+                        var lng: Double = 0.0,
+                        var zoom: Float = 0f,
+                        var address: String= "") : Parcelable
 
