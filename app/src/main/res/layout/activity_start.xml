@@ -48,10 +48,10 @@
         app:layout_constraintVertical_bias="0.9" />
 
     <Button
-        android:id="@+id/blankbuttonID2"
+        android:id="@+id/seeplacemarksmap"
         android:layout_width="150dp"
         android:layout_height="95dp"
-        android:text="@string/blankbuttonid2"
+        android:text="@string/seeplacemarksmap"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@id/arexperience"

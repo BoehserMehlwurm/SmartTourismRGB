@@ -14,6 +14,9 @@
     <uses-feature
         android:name="android.hardware.camera.ar"/>
 
+    <uses-feature
+        android:name="android.hardware.camera"/>
+
     <application
         android:name="main.MainApp"
         android:allowBackup="true"

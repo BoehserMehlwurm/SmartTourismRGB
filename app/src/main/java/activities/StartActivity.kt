@@ -5,15 +5,19 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.result.ActivityResultLauncher
 import com.example.smarttourismrgb.R
 import com.example.smarttourismrgb.databinding.ActivityStartBinding
 import main.MainApp
+import models.Locationsave
+import models.PlacemarkModel
 import timber.log.Timber
 import timber.log.Timber.i
 
 class StartActivity : AppCompatActivity() {
     private lateinit var binding: ActivityStartBinding
     lateinit var app: MainApp
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,8 +46,17 @@ class StartActivity : AppCompatActivity() {
             val intent = Intent(this, ArActivity::class.java)
             startActivity(intent)
         }
-        binding.blankbuttonID2.setOnClickListener(){
-            i("Blankbutton1 pressed")
+
+
+
+        binding.seeplacemarksmap.setOnClickListener(){
+            i("Show Placemarks pressed")
+
+            val launcherIntent = Intent(this, MapActivity::class.java)
+                startActivity(launcherIntent)
+
+
+
         }
         binding.blankbuttonID3.setOnClickListener(){
             i("Blankbutton1 pressed")
@@ -70,3 +83,5 @@ class StartActivity : AppCompatActivity() {
 
 
 }
+
+
