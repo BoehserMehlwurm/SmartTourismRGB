@@ -7,11 +7,6 @@
     android:layout_height="match_parent"
     tools:context="activities.PlacemarkActivity">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appBarLayout"
@@ -20,99 +15,150 @@
             android:background="@color/colorAccent"
             android:fitsSystemWindows="true"
             app:elevation="0dip"
+            app:layout_constraintTop_toTopOf="parent"
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbarAdd"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:titleTextColor="@color/colorPrimary" />
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/toolbarAdd"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:titleTextColor="@color/colorPrimary" />
         </com.google.android.material.appbar.AppBarLayout>
 
-        <ScrollView
+
+        <EditText
+            android:id="@+id/placemarkTitle"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@id/appBarLayout"
-            android:fillViewport="true">
+            android:layout_height="45dp"
+            android:layout_margin="8dp"
+            android:autofillHints=""
+            android:hint="@string/hint_placemarkTitle"
+            android:inputType="text"
+            android:maxLength="25"
+            android:maxLines="1"
+            android:padding="8dp"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.1" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+        <EditText
+            android:id="@+id/description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:hint="@string/hint_placemarkDescription"
+            android:inputType="text"
+            android:maxLength="25"
+            android:maxLines="1"
+            android:padding="8dp"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.2" />
 
-                <EditText
-                    android:id="@+id/placemarkTitle"
-                    android:layout_width="match_parent"
-                    android:layout_height="45dp"
-                    android:layout_margin="8dp"
-                    android:autofillHints=""
-                    android:hint="@string/hint_placemarkTitle"
-                    android:inputType="text"
-                    android:maxLength="25"
-                    android:maxLines="1"
-                    android:padding="8dp"
-                    android:textColor="@color/colorPrimaryDark"
-                    android:textSize="14sp" />
+        <Button
+            android:id="@+id/chooseImage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:background="@color/colorAccent"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp"
+            android:text="@string/button_addImage"
+            android:textColor="@color/colorPrimary"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="parent"
+            app:layout_constraintRight_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.3" />
 
-                <EditText
-                    android:id="@+id/description"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:hint="@string/hint_placemarkDescription"
-                    android:inputType="text"
-                    android:maxLength="25"
-                    android:maxLines="1"
-                    android:padding="8dp"
-                    android:textColor="@color/colorPrimaryDark"
-                    android:textSize="14sp" />
+        <Button
+            android:id="@+id/takephoto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:background="@color/colorAccent"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp"
+            android:text="@string/button_takephoto"
+            android:textColor="@color/colorPrimary"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.4" />
 
-                <Button
-                    android:id="@+id/chooseImage"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="16dp"
-                    android:background="@color/colorAccent"
-                    android:paddingBottom="8dp"
-                    android:paddingTop="8dp"
-                    android:text="@string/button_addImage"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="16sp"/>
+        <ImageView
+            android:id="@+id/placemarkImage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:srcCompat="@mipmap/ic_launcher"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.5" />
 
-                <ImageView
-                    android:id="@+id/placemarkImage"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:srcCompat="@mipmap/ic_launcher"/>
+        <Button
+            android:id="@+id/placemarkLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:background="@color/colorAccent"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp"
+            android:stateListAnimator="@null"
+            android:text="@string/button_location"
+            android:textColor="@color/colorPrimary"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.7" />
 
-                <Button
-                    android:id="@+id/placemarkLocation"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="16dp"
-                    android:background="@color/colorAccent"
-                    android:paddingBottom="8dp"
-                    android:paddingTop="8dp"
-                    android:stateListAnimator="@null"
-                    android:text="@string/button_location"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="16sp"/>
+        <TextView
+            android:id="@+id/locationInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text=""
+            android:hint="@string/hint_placemarkLocation"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.8" />
 
-                <Button
-                    android:id="@+id/btnAdd"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="16dp"
-                    android:background="@color/colorAccent"
-                    android:paddingTop="8dp"
-                    android:paddingBottom="8dp"
-                    android:stateListAnimator="@null"
-                    android:text="@string/button_addPlacemark"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="16sp" />
-            </LinearLayout>
-        </ScrollView>
-
-    </RelativeLayout>
+        <Button
+            android:id="@+id/btnAdd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            app:backgroundTint="@null"
+            android:background="@color/teal_700"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:stateListAnimator="@null"
+            android:text="@string/button_addPlacemark"
+            android:textColor="@color/colorPrimary"
+            android:textSize="16sp"
+            android:gravity="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+

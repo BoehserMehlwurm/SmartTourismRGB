@@ -6,4 +6,12 @@
         android:id="@+id/item_cancel"
         android:title="@string/menu_cancelPlacemark"
         app:showAsAction="always"/>
+
+    <!-- Delete Button invisible by deault. For edit = visible -->
+    <item
+        android:id="@+id/item_delete"
+        android:title="@string/delete"
+        android:visible="false"
+        app:showAsAction="ifRoom" />
+
 </menu>
