@@ -1,6 +1,7 @@
 package activities
 
 import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
@@ -8,16 +9,25 @@ import android.view.MenuItem
 import androidx.activity.result.ActivityResultLauncher
 import com.example.smarttourismrgb.R
 import com.example.smarttourismrgb.databinding.ActivityStartBinding
+import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
+import com.squareup.picasso.Picasso
 import main.MainApp
 import models.Locationsave
 import models.PlacemarkModel
+import models.UriParser
 import timber.log.Timber
 import timber.log.Timber.i
+import java.io.File
+import java.lang.reflect.Type
+import java.util.ArrayList
 
 class StartActivity : AppCompatActivity() {
     private lateinit var binding: ActivityStartBinding
     lateinit var app: MainApp
-
+    var placemark = PlacemarkModel()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,13 +36,14 @@ class StartActivity : AppCompatActivity() {
         binding = ActivityStartBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+
         binding.toolbarAdd.title = title
         setSupportActionBar(binding.toolbarAdd)
 
         Timber.plant(Timber.DebugTree())
         i("Smart Tourism App started...")
 
-        //actionBar!!.title = "PlacemarkList Activity"
+
 
         binding.startApplication.setOnClickListener() {
             i("Start Button Pressed")
@@ -58,8 +69,23 @@ class StartActivity : AppCompatActivity() {
 
 
         }
-        binding.blankbuttonID3.setOnClickListener(){
-            i("Blankbutton1 pressed")
+
+
+
+    binding.initlist.setOnClickListener(){
+
+        app = application as MainApp
+        i("Init Button pressed")
+            placemark.title = "Init Landmark"
+            placemark.description = "Test"
+            placemark.lat = 49.00554404625103
+            placemark.lng = 12.10002925246954
+
+        app.placemarks.create(placemark.copy())
+
+        // first try, should add a Init List of places. Other option is the Places Google API
+            setResult(RESULT_OK)
+
         }
 
 

@@ -28,8 +28,8 @@
 
         <TextView
             android:id="@+id/placemarkTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="120dp"
+            android:layout_height="38dp"
             android:layout_marginTop="4dp"
             android:textAlignment="viewStart"
             android:textSize="30sp"
@@ -41,15 +41,28 @@
 
         <TextView
             android:id="@+id/description"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="120dp"
+            android:layout_height="22dp"
             android:layout_marginTop="4dp"
             android:textAlignment="viewStart"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.052"
+            app:layout_constraintHorizontal_bias="0.048"
             app:layout_constraintStart_toEndOf="@+id/imageIcon"
             app:layout_constraintTop_toBottomOf="@id/placemarkTitle"
             tools:text="A Description" />
+
+        <TextView
+            android:id="@+id/placemarkLocation"
+            android:layout_width="180dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="8dp"
+            android:textAlignment="viewStart"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.048"
+            app:layout_constraintStart_toEndOf="@+id/placemarkTitle"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="A Location" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

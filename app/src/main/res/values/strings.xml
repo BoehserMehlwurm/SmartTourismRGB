@@ -1,6 +1,13 @@
 <resources>
     <string name="app_name">Smart Tourism RGB</string>
-    <string name="button_StartApplication">Start Application</string>
+    <!-- Start Screen   -->
+    <string name="button_StartApplication">Landmarks</string>
+    <string name="button_arexperience">AR Experience</string>
+    <string name="seeplacemarksmap">Show all spots</string>
+    <string name="initlist">Initial spots</string>
+    <string name="menu_info">Info</string>
+    <string name="imagergb_descr">Picture with the skyline of Regensburg</string>
+    <!-- Placemark List and Placemark Activity   -->
     <string name="button_location">Add Location</string>
     <string name="button_addPlacemark">Add Interesting Place</string>
     <string name="button_addImage">Add Image</string>
@@ -8,19 +15,22 @@
     <string name="hint_placemarkTitle">Title</string>
     <string name="menu_addPlacemark">Add</string>
     <string name="menu_cancelPlacemark">Cancel</string>
-    <string name="menu_info">Info</string>
     <string name="enter_placemark_title">Please enter a Placemark title</string>
     <string name="save_placemark">Save Placemark</string>
     <string name="select_placemark_image">Select placemark image</string>
     <string name="change_placemark_image">Change placemark image</string>
-    <string name="imagergb_descr">Picutre with the skyline of Regensburg</string>
-    <string name="button_arexperience">AR Experience</string>
-    <string name="seeplacemarksmap">Show Placemarks</string>
-    <string name="blankbuttonid3">blankbuttonID3</string>
-    <string name="ipsum">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet,</string>
     <string name="title_activity_map">Map</string>
     <string name="map_goback">Set Location</string>
     <string name="delete">Delete</string>
     <string name="placename_textview">TEST</string>
     <string name="map_set_postion">Set Position</string>
+    <string name="hint_placemarkLocation">Address will be shown after selecting</string>
+    <!-- Info Page   -->
+    <string name="ipsum">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet,</string>
+    <!-- Show Map   -->
+    <string name="back_map">Back</string>
+    <!-- Splash Screen   -->
+    <string name="regensburg_smart_tourism">Regensburg Smart Tourism</string>
+    <string name="button_takephoto">Take picture</string>
+
 </resources>

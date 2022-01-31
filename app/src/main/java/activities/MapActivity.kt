@@ -1,14 +1,17 @@
 package activities
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.drawable.Icon
 import android.location.Address
 import android.location.Geocoder
 import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -45,7 +48,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerD
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        plant(DebugTree())
+
 
         binding = ActivityMapBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -53,7 +56,9 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerD
 
         if(intent.hasExtra("location")) {
             location = intent.extras?.getParcelable<Locationsave>("location")!!
+            Toast.makeText(this, "Select the location via Drag and Drop", Toast.LENGTH_LONG).show()
         }else{
+            binding.btnSet.setText(R.string.back_map)
             //placemark = intent.extras?.getParcelable<PlacemarkModel>("placemark")!!
         }
 
@@ -125,67 +130,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerD
                 .position(LatLng(it.lat, it.lng))
             map.addMarker(options)
         }
-
-
-        //var list = app.placemarks.findAll()
-        /**
-
-
-        val placemarkLatLng = LatLng(placemark.lat, placemark.lng)
-        val options = MarkerOptions()
-        .title(placemark.title)
-        .position(placemarkLatLng)
-        map.addMarker(options)
-
-
-
-        var m1: Marker? = map.addMarker(
-        MarkerOptions()
-        .position(LatLng(49.006963935696014, 12.091747932136057))
-        .title(app.placemarks.findAll().get(0).address)
-        .snippet("Snippet1")
-
-        ) */
-
-
-        /**
-        val placemarkLatLng = LatLng(placemarker.get(0).lat, placemarker.get(0).lng)
-
-        val options = MarkerOptions()
-        .title(placemarker.get(0).address)
-        .position(placemarkLatLng)
-
-        map.addMarker(options)
-
-
-
-        val placemarker = app.placemarks.findAll()
-
-
-        placemark.title.forEach {
-        val placemarkLatLng = LatLng(49.006963935696014, 12.091747932136057)
-
-        val options = MarkerOptions()
-        .title(it.title)
-        .snippet(it.address)
-        .position(placemarkLatLng)
-
-        map.addMarker(options)
-        }
-
-         */
-
-        /**
-        val placemarkLatLng = LatLng(placemarkmarker.get(0).lat, placemarkmarker.get(0).lng)
-
-        val options = MarkerOptions()
-        .title(placemarkmarker.get(0).title)
-        .snippet(placemarkmarker.get(0).address)
-        .position(placemarkLatLng)
-        map.addMarker(options)
-         */
-
-
     }
 
 
@@ -215,7 +159,13 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerD
                     .snippet(currentLatLng.toString())
                     .draggable(true)
                     .position(currentLatLng)
-                map.addMarker(options)
+                    //.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue))
+                i("MapActivity: currentLatLng: $currentLatLng")
+
+                if(intent.hasExtra("location")){
+                    map.addMarker(options)
+                }
+
 
                  i("Map Current Locaton"+currentLatLng.toString())
 
@@ -228,7 +178,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerD
 
 
     companion object {
-        private const val LOCATION_PERMISSION_REQUEST_CODE = 1
+        const val LOCATION_PERMISSION_REQUEST_CODE = 1
     }
 
     override fun onMarkerDrag(marker: Marker) {

@@ -10,3 +10,4 @@ fun showImagePicker(intentLauncher : ActivityResultLauncher<Intent>) {
     chooseFile = Intent.createChooser(chooseFile, R.string.select_placemark_image.toString())
     intentLauncher.launch(chooseFile)
 }
+

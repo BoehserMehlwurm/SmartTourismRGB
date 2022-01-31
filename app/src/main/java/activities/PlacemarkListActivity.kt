@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.smarttourismrgb.R
 import com.example.smarttourismrgb.databinding.ActivityPlacemarkListBinding
+import com.example.smarttourismrgb.databinding.ActivityPlacemarkListBinding.*
 import com.example.smarttourismrgb.databinding.CardPlacemarkBinding
 import main.MainApp
 import models.PlacemarkModel
@@ -31,7 +32,7 @@ class PlacemarkListActivity : AppCompatActivity(), PlacemarkListener {
         super.onCreate(savedInstanceState)
 
 
-        binding = ActivityPlacemarkListBinding.inflate(layoutInflater)
+        binding = inflate(layoutInflater)
         setContentView(binding.root)
         binding.toolbar.title = title
         setSupportActionBar(binding.toolbar)
@@ -47,7 +48,7 @@ class PlacemarkListActivity : AppCompatActivity(), PlacemarkListener {
 
         val layoutManager = LinearLayoutManager(this)
         binding.recyclerView.layoutManager = layoutManager
-        //binding.recyclerView.adapter = PlacemarkAdapter(app.placemarks.findAll(),this)
+
         loadPlacemarks()
 
         registerRefreshCallback()
@@ -82,17 +83,6 @@ class PlacemarkListActivity : AppCompatActivity(), PlacemarkListener {
         refreshIntentLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult())
             { loadPlacemarks() }
     }
-
-    /*private val refresh = registerForActivityResult(ActivityResultContracts.StartActivityForResult())
-        {if(it.resultCode == Activity.RESULT_OK) {
-            binding.recyclerView.adapter?.notifyDataSetChanged()} //updates the view if code result is OK
-           //val value = it.data?.getStringExtra("input")} //got the code from a MongoDB Articel about the deprecated onActivityResult
-            //effort was not needed, changed in the labs as well.
-       }
-    **/
-    //override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-       // binding.recyclerView.adapter?.notifyDataSetChanged()
-        //super.onActivityResult(requestCode, resultCode, data) }
 
 
 

@@ -81,6 +81,9 @@ class PlacemarkActivity : AppCompatActivity() {
             finish()
         }
 
+        binding.takephoto.setOnClickListener{
+
+        }
 
         binding.chooseImage.setOnClickListener {
             showImagePicker(imageIntentLauncher)
@@ -96,6 +99,7 @@ class PlacemarkActivity : AppCompatActivity() {
                 location.lng = placemark.lng
                 location.zoom = placemark.zoom
                 location.address = placemark.address
+
             }
 
             val launcherIntent = Intent(this, MapActivity::class.java)

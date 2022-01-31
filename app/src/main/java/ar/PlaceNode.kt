@@ -20,12 +20,13 @@ import android.widget.TextView
 import com.example.smarttourismrgb.R
 import com.google.ar.sceneform.Node
 import com.google.ar.sceneform.rendering.ViewRenderable
-//import models.Place
-//import models.Place
+import models.PlacemarkModel
+
 
 class PlaceNode(
     val context: Context,
-  //  val place: Place?
+    val placemark: PlacemarkModel?
+
 ) : Node() {
 
     private var placeRenderable: ViewRenderable? = null
@@ -49,13 +50,16 @@ class PlaceNode(
                 setRenderable(renderable)
                 placeRenderable = renderable
 
-               // place?.let {
+
+
+               // place?.let
+                placemark?.let{
                     textViewPlace = renderable.view.findViewById(R.id.placeName)
-                //     textViewPlace?.text = it.name
+                    textViewPlace?.text = it.address
                 }
             }
     }
-/**
+
     fun showInfoWindow() {
         // Show text
         textViewPlace?.let {
@@ -69,4 +73,4 @@ class PlaceNode(
             (it as PlaceNode).textViewPlace?.visibility = View.GONE
         }
     }
-}*/
+}

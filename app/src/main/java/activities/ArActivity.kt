@@ -2,19 +2,20 @@ package activities
 
 import android.app.ActivityManager
 import android.content.Context
+import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.location.Location
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.getSystemService
+import ar.PlaceNode
 //import api.NearbyPlacesResponse
 //import api.PlacesService
-import ar.PlaceNode
 import ar.PlacesArFragment
 import com.example.smarttourismrgb.R
 import com.example.smarttourismrgb.databinding.ActivityArBinding
@@ -24,18 +25,20 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.ar.sceneform.AnchorNode
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.google.ar.sceneform.math.Vector3
+import com.google.ar.sceneform.Camera
+import com.google.ar.sceneform.Scene
+import com.google.ar.sceneform.math.Quaternion
+import main.MainApp
+import models.PlacemarkModel
+import timber.log.Timber
 //import models.Place
 //import models.getPositionVector
-import timber.log.Timber
 import timber.log.Timber.*
+import kotlin.math.*
 
 class ArActivity : AppCompatActivity(), SensorEventListener {
 
@@ -57,10 +60,26 @@ class ArActivity : AppCompatActivity(), SensorEventListener {
     private val orientationAngles = FloatArray(3)
 
     private var anchorNode: AnchorNode? = null
-    private var markers: MutableList<Marker> = emptyList<Marker>().toMutableList()
+    //private var markers: MutableList<Marker> = emptyList<Marker>().toMutableList()
     //private var places: List<Place>? = null commented out cause of the unused place model
-    private var currentLocation: Location? = null
-    private var map: GoogleMap? = null
+    //private var currentLocation: Location? = null
+    private lateinit var map: GoogleMap
+    //var location = Locationsave()
+    private lateinit var lastLocation: Location
+    //for the Sensor
+    private var azimuth: Int = 0
+    private var rotationV: Sensor? = null
+    private var accelerometer: Sensor? = null
+    private var magnetometer: Sensor? = null
+    private var rMat = FloatArray(9)
+    private var orientation = FloatArray(3)
+    private val lastAccelerometer = FloatArray(3)
+    private val lastMagnetometer = FloatArray(3)
+    private var lastAccelerometerSet = false
+    private var lastMagnetometerSet = false
+    private var isArPlaced = false
+    private lateinit var camera: Camera
+    private lateinit var scene: Scene
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,7 +87,7 @@ class ArActivity : AppCompatActivity(), SensorEventListener {
             return
         }
 
-        plant(DebugTree())
+
         binding = inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -76,9 +95,16 @@ class ArActivity : AppCompatActivity(), SensorEventListener {
         arFragment = supportFragmentManager.findFragmentById(R.id.ar_fragment) as PlacesArFragment
         mapFragment = supportFragmentManager.findFragmentById(R.id.maps_fragment) as SupportMapFragment
 
-        sensorManager = getSystemService()!!
+        //sensorManager = getSystemService()!!
+        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        startSensor()
+
         //placesService = PlacesService.create()
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+        //scene = arFragment.arSceneView.scene!!
+        //camera = scene.camera
+
 
         setUpAr()
         setUpMaps()
@@ -86,156 +112,204 @@ class ArActivity : AppCompatActivity(), SensorEventListener {
 
     override fun onResume() {
         super.onResume()
-        sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)?.also {
-            sensorManager.registerListener(
-                this,
-                it,
-                SensorManager.SENSOR_DELAY_NORMAL
-            )
-        }
-        sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)?.also {
-            sensorManager.registerListener(
-                this,
-                it,
-                SensorManager.SENSOR_DELAY_NORMAL
-            )
-        }
+        startSensor()
+
     }
 
     override fun onPause() {
         super.onPause()
-        sensorManager.unregisterListener(this)
+        stopSensor()
     }
 
     private fun setUpAr() {
-        arFragment.setOnTapArPlaneListener { hitResult, _, _ ->
+            arFragment.setOnTapArPlaneListener { hitResult, _, _ ->
             val anchor = hitResult.createAnchor()
             anchorNode = AnchorNode(anchor)
             anchorNode?.setParent(arFragment.arSceneView.scene)
-            addPlaces(anchorNode!!)
+                i("Fehlersuche: On Screen tapped") // at the moment it will place them when tapped
+                Toast.makeText(this@ArActivity, "Tapped, Compass: $azimuth", Toast.LENGTH_LONG).show()
+
+                setPlacemarks(anchorNode!!)
+
         }
     }
 
-    private fun addPlaces(anchorNode: AnchorNode) {
-        val currentLocation = currentLocation
-        if (currentLocation == null) {
-            //Log.w(TAG, "Location has not been determined yet")
-            i("Location has not been determined yet")
-            return
-        }
-/**
-        val places = places
-        if (places == null) {
 
-            //Timber.i("No places to put")
-            //Log.w(TAG, "No places to put")
-            i("No places to put")
-            return
-        }
 
-        for (place in places) {
-            // Add the place in AR
-            val placeNode = PlaceNode(this, place)
-            placeNode.setParent(anchorNode)
-            placeNode.localPosition = place.getPositionVector(orientationAngles[0], currentLocation.latLng)
-            placeNode.setOnTapListener { _, _ ->
-              //  showInfoWindow(place) commented out cause of the unused place model
-            }
 
-            // Add the place in maps
-            map?.let {
-                val marker = it.addMarker(
-                    MarkerOptions()
-                        .position(place.geometry.location.latLng)
-                        .title(place.name)
-                )
-                marker!!.tag = place
-                markers.add(marker)
-            }
-        }*/
-    }
-    /**
-    private fun showInfoWindow(place: Place) {
+    private fun showInfoWindow(place: PlacemarkModel) {
         // Show in AR
 
         val matchingPlaceNode = anchorNode?.children?.filter {
             it is PlaceNode
         }?.first {
-            val otherPlace = (it as PlaceNode).place ?: return@first false
+            val otherPlace = (it as PlaceNode).placemark ?: return@first false //coming from placeNode
             return@first otherPlace == place
         } as? PlaceNode
         matchingPlaceNode?.showInfoWindow()
 
         // Show as marker
-        val matchingMarker = markers.firstOrNull {
-            val placeTag = (it.tag as? Place) ?: return@firstOrNull false
+        /**
+        val matchingMarker = app.placemarks.findAll().firstOrNull {
+            val placeTag = (it.tag as? PlacemarkModel) ?: return@firstOrNull false
             return@firstOrNull placeTag == place
         }  //commented out cause of the unused place model
         matchingMarker?.showInfoWindow()
-    }*/
+        */
+    }
 
 
     private fun setUpMaps() {
+
         mapFragment.getMapAsync { googleMap ->
             googleMap.isMyLocationEnabled = true
 
-            getCurrentLocation {
-                val pos = CameraPosition.fromLatLngZoom(it.latLng, 13f)
-                googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(pos))
-                //getNearbyPlaces(it)
-            }
             googleMap.setOnMarkerClickListener { marker ->
-                val tag = marker.tag
-                //if (tag !is Place) { //commented out cause of the unused place model
-                 //   return@setOnMarkerClickListener false
-                //}
-                //showInfoWindow(tag)
+
+
+                marker.showInfoWindow()
                 return@setOnMarkerClickListener true
             }
             map = googleMap
+
+            getCurrentLocation()
+            setPlacemarks(anchorNode)
         }
+
+
     }
 
-    private fun getCurrentLocation(onSuccess: (Location) -> Unit) {
-        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-            currentLocation = location
-            onSuccess(location)
-        }.addOnFailureListener {
-            i("Could not get location")
-            //Log.e(TAG, "Could not get location")
+    private fun setPlacemarks(anchorNode: AnchorNode?) {
+
+        val app: MainApp = application as MainApp
+
+        val markerlist = app.placemarks.findAll()
+        for (point in markerlist) {
+            map.addMarker(MarkerOptions().position(LatLng(point.lat, point.lng)))
         }
-    }
-/**
-    private fun getNearbyPlaces(location: Location) {
-        val apiKey = resources.getResourceName(R.string.google_maps_key)
-        placesService.nearbyPlaces(
-            apiKey = apiKey,
-            location = "${location.latitude},${location.longitude}",
-            radiusInMeters = 2000,
-            placeType = "park"
-        ).enqueue(
-            object : Callback<NearbyPlacesResponse> {
-                override fun onFailure(call: Call<NearbyPlacesResponse>, t: Throwable) {
-                    //Log.e(TAG, "Failed to get nearby places", t)
-                    i("Failed to get nearby places")
+
+        markerlist.forEach {
+            val options = MarkerOptions()
+                .title(it.title)
+                .snippet(it.address)
+                .position(LatLng(it.lat, it.lng))
+            map.addMarker(options)
+        }
+
+
+        // Till here place the placemarks onto the map section
+        // Now place the placemark loactions onto the AR sight
+
+
+
+
+
+        for (marker in markerlist) {
+            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+
+
+                val markerLatLng = LatLng(marker.lat, marker.lng)
+
+
+                val currentLocation = LatLng(lastLocation.latitude, lastLocation.longitude)
+
+
+
+                val placeNode = PlaceNode(this, marker)
+                placeNode.setParent(anchorNode)
+                i("Fehlersuche: 1) setMarker ${marker.address} to $currentLocation (now comes getPositionVektor)")
+                i("Fehlersuche: 1.1 currentLocation: $currentLocation, currentLatLng: $markerLatLng")
+                //placeNode.localPosition = marker.getPositionVector(orientationAngles[0], currentLocation.latLng)//currentLocation.latLng)
+
+
+
+                placeNode.worldPosition = Vector3(getPositionen(currentLocation, markerLatLng))
+                i("ARCore: PlaceNode.worldposition ${placeNode.worldPosition}")
+
+                val cameraPosition = arFragment.arSceneView.scene.camera.worldPosition
+                i("ARCore: CameraPosition $cameraPosition")
+
+                val direction = Vector3.subtract(cameraPosition, placeNode.worldPosition)
+                i("ARCore: direction $direction")
+
+                val lookRotation = Quaternion.lookRotation(direction, Vector3.up())
+                i("ARCore: lookRotation $lookRotation")
+
+                placeNode.worldRotation = lookRotation
+                i("ARCore: placeNode.worldrotation ${placeNode.worldRotation}")
+
+                //placeNode.localPosition = getPositionen(currentLocation, currentLatLng)
+
+                placeNode.setOnTapListener { _, _ ->
+                    showInfoWindow(marker)
+
                 }
 
-                override fun onResponse(
-                    call: Call<NearbyPlacesResponse>,
-                    response: Response<NearbyPlacesResponse>
-                ) {
-                    if (!response.isSuccessful) {
-                        //Log.e(TAG, "Failed to get nearby places")
-                        i("Failed to get nearby places")
-                        return
-                    }
-
-                    //val places = response.body()?.results ?: emptyList()
-                    //this@ArActivity.places = places
-                }
+            }.addOnFailureListener {
+                i("Location not found")
             }
-        )
-    }*/
+        }
+    }
+
+    fun getPositionen(currentLatLng: LatLng, markerlatLng: LatLng): Vector3 {
+
+        //val placeLatLng = this.geometry.latLng
+        //i("inside getPositionVector, $placeLatLng")
+        Timber.plant(Timber.DebugTree())
+        i("MyLat/Lng $currentLatLng")
+        i("TargetLat/Lng $markerlatLng")
+
+        val lat1 = currentLatLng.latitude / 180 * PI
+        val lng1 = currentLatLng.longitude / 180 * PI
+        val lat2 = markerlatLng.latitude / 180 * PI
+        val lng2 = markerlatLng.longitude / 180 * PI
+
+        i("Lat 1: $lat1 Lat2: $lat2 Lng1: $lng1 $lng2")
+
+        val deltaOmega = ln(tan((lat2 / 2) + (PI / 4)) / tan((lat1 / 2) + (PI / 4)))
+        val deltaLongitude = (lng1 - lng2)
+
+        val zuruck = atan2(deltaLongitude, deltaOmega)
+
+        val degree = (360 - (zuruck * 180 / PI))
+        val distant = 3.0
+
+        val y = 0
+        val x = distant * cos(PI * degree / 180)
+        val z = 1 * distant * sin(PI * degree / 180)
+
+        i("ARCore_MyLocation $currentLatLng")
+        i("ARCore_TargetLocation $markerlatLng")
+        i("ARCore_COMPASS $azimuth")
+        i("ARCore_Degree $degree")
+        i("ARCore_X $x")
+        i("ARCore_Y $y")
+        i("ARCore_Z $z")
+
+        return Vector3(x.toFloat(), y.toFloat(), z.toFloat())
+    }
+
+    private fun getCurrentLocation() {
+        if (ActivityCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                MapActivity.LOCATION_PERMISSION_REQUEST_CODE)
+            return
+        }
+        map.isMyLocationEnabled = true
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            if (location != null) {
+                lastLocation = location
+                val currentLatLng = LatLng(location.latitude, location.longitude)
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
+                i("Map Current Locaton"+currentLatLng.toString())
+            }
+        }.addOnFailureListener{
+            i("Location not found")
+        }
+    }
+
 
 
     private fun isSupportedDevice(): Boolean { //checks the device OpenGL ES Version
@@ -253,25 +327,46 @@ class ArActivity : AppCompatActivity(), SensorEventListener {
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
     }
 
-    override fun onSensorChanged(event: SensorEvent?) {
-        if (event == null) {
-            return
-        }
-        if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
-            System.arraycopy(event.values, 0, accelerometerReading, 0, accelerometerReading.size)
-        } else if (event.sensor.type == Sensor.TYPE_MAGNETIC_FIELD) {
-            System.arraycopy(event.values, 0, magnetometerReading, 0, magnetometerReading.size)
+
+    override fun onSensorChanged(event: SensorEvent) {
+        if (event.sensor.type == Sensor.TYPE_ROTATION_VECTOR) {
+            SensorManager.getRotationMatrixFromVector(rMat, event.values)
+            azimuth = (Math.toDegrees(SensorManager.getOrientation(rMat, orientation)[0].toDouble()) + 360).toInt() % 360
         }
 
-        // Update rotation matrix, which is needed to update orientation angles.
-        SensorManager.getRotationMatrix(
-            rotationMatrix,
-            null,
-            accelerometerReading,
-            magnetometerReading
-        )
-        SensorManager.getOrientation(rotationMatrix, orientationAngles)
+        if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
+            System.arraycopy(event.values, 0, lastAccelerometer, 0, event.values.size)
+            lastAccelerometerSet = true
+        } else if (event.sensor.type == Sensor.TYPE_MAGNETIC_FIELD) {
+            System.arraycopy(event.values, 0, lastMagnetometer, 0, event.values.size)
+            lastMagnetometerSet = true
+        }
+
+        if (lastAccelerometerSet && lastMagnetometerSet) {
+            SensorManager.getRotationMatrix(rMat, null, lastAccelerometer, lastMagnetometer)
+            SensorManager.getOrientation(rMat, orientation)
+            azimuth = (Math.toDegrees(SensorManager.getOrientation(rMat, orientation)[0].toDouble()) + 360).toInt() % 360
+        }
     }
+
+    private fun startSensor() {
+        if (sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR) == null) {
+            accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+            magnetometer = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
+            sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI)
+            sensorManager.registerListener(this, magnetometer, SensorManager.SENSOR_DELAY_UI)
+        } else {
+            rotationV = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
+            sensorManager.registerListener(this, rotationV, SensorManager.SENSOR_DELAY_UI)
+        }
+    }
+
+    private fun stopSensor() {
+        sensorManager.unregisterListener(this, accelerometer)
+        sensorManager.unregisterListener(this, magnetometer)
+    }
+
+
 }
 
 val Location.latLng: LatLng

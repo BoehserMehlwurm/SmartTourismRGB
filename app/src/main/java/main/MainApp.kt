@@ -2,7 +2,6 @@ package main
 
 import android.app.Application
 import models.PlacemarkJSONStore
-import models.PlacemarkMemStore
 import models.PlacemarkModel
 import models.PlacemarkStore
 import timber.log.Timber
