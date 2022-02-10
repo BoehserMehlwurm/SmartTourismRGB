@@ -3,6 +3,7 @@ package activities
 import android.app.ActivityManager
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -17,6 +18,10 @@ import ar.PlaceNode
 //import api.NearbyPlacesResponse
 //import api.PlacesService
 import ar.PlacesArFragment
+import com.android.volley.Request
+import com.android.volley.Response
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
 import com.example.smarttourismrgb.R
 import com.example.smarttourismrgb.databinding.ActivityArBinding
 import com.example.smarttourismrgb.databinding.ActivityArBinding.inflate
@@ -27,13 +32,16 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.PolylineOptions
 import com.google.ar.sceneform.AnchorNode
 import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.Camera
 import com.google.ar.sceneform.Scene
 import com.google.ar.sceneform.math.Quaternion
+import com.google.maps.android.PolyUtil
 import main.MainApp
 import models.PlacemarkModel
+import org.json.JSONObject
 import timber.log.Timber
 //import models.Place
 //import models.getPositionVector
@@ -160,7 +168,14 @@ class ArActivity : AppCompatActivity(), SensorEventListener {
 
 
     private fun setUpMaps() {
-
+        if (ActivityCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                MapActivity.LOCATION_PERMISSION_REQUEST_CODE
+            )
+            return
+        }
         mapFragment.getMapAsync { googleMap ->
             googleMap.isMyLocationEnabled = true
 
@@ -176,8 +191,10 @@ class ArActivity : AppCompatActivity(), SensorEventListener {
             setPlacemarks(anchorNode)
         }
 
-
     }
+
+
+
 
     private fun setPlacemarks(anchorNode: AnchorNode?) {
 

@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import com.example.smarttourismrgb.R
 import com.example.smarttourismrgb.databinding.ActivityStartBinding
@@ -73,6 +74,8 @@ class StartActivity : AppCompatActivity() {
 
 
     binding.initlist.setOnClickListener(){
+
+        Toast.makeText(this, "List filled", Toast.LENGTH_LONG).show()
 
         app = application as MainApp
         i("Init Button pressed")

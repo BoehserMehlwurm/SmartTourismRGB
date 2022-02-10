@@ -32,5 +32,6 @@
     <!-- Splash Screen   -->
     <string name="regensburg_smart_tourism">Regensburg Smart Tourism</string>
     <string name="button_takephoto">Take picture</string>
+    <string name="base_url">https://maps.googleapis.com</string>
 
 </resources>

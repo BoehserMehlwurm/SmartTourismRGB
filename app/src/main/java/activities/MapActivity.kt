@@ -1,35 +1,37 @@
 package activities
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.drawable.Icon
+import android.graphics.Color
 import android.location.Address
 import android.location.Geocoder
 import android.location.Location
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
+import com.beust.klaxon.*
 import com.example.smarttourismrgb.R
 import com.example.smarttourismrgb.databinding.ActivityMapBinding
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.google.android.gms.maps.model.*
-import com.squareup.picasso.Picasso
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.PolylineOptions
 import main.MainApp
 import models.Locationsave
 import models.PlacemarkModel
+import org.jetbrains.anko.async
+import org.jetbrains.anko.uiThread
 import timber.log.Timber
-import timber.log.Timber.*
-
-
+import timber.log.Timber.i
+import java.net.URL
 
 
 class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerDragListener, GoogleMap.OnMarkerClickListener {
@@ -42,7 +44,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerD
     //lateinit var app: MainApp
     var placemarker = PlacemarkModel()
 
-
+    private lateinit var fkip: LatLng
+    private lateinit var monas: LatLng
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -107,7 +110,107 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerD
         getCurrentLocation()
         setPlacemarks()
 
+
+        val sydney = LatLng(-34.0, 151.0)
+        val opera = LatLng(-33.9320447,151.1597271)
+        map.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
+        map.addMarker(MarkerOptions().position(opera).title("Opera House"))
+
+
+
+// Declare polyline object and set up color and width
+        val options = PolylineOptions()
+        options.color(Color.RED)
+        options.width(5f)
+
+        // build URL to call API
+        val url = getURL(sydney, opera)
+
+        async {
+            // Connect to URL, download content and convert into string asynchronously
+            val result = URL(url).readText()
+            uiThread {
+
+
+                // When API call is done, create parser and convert into JsonObjec
+                val parser = Parser()
+                val stringBuilder: StringBuilder = StringBuilder(result)
+                val json: JsonObject = parser.parse(stringBuilder) as JsonObject
+
+
+                // get to the correct element in JsonObject
+                val routes = json.array<JsonObject>("routes")!!
+                val legs = routes[0]["legs"] as JsonArray<JsonObject>
+                val points = legs [0] ["steps"] as JsonArray<JsonObject>
+
+
+
+                // For every element in the JsonArray, decode the polyline string and pass all points to a List
+                val polypts = points.flatMap { decodePoly(it.obj("polyline")?.string("points")!!)  }
+                i("polypts ${points.flatMap { decodePoly(it.obj("polyline")?.string("points")!!)  }}")
+
+                // Add  points to polyline and bounds
+                options.add(sydney)
+                for (point in polypts) options.add(point)
+                options.add(opera)
+                map.addPolyline(options)
+
+
+            }
+        }
     }
+
+
+
+
+    private fun getURL(from : LatLng, to : LatLng) : String {
+        val origin = "origin=" + from.latitude + "," + from.longitude
+        val dest = "destination=" + to.latitude + "," + to.longitude
+        //val sensor = "sensor=false"
+        val apikey = getString(R.string.google_maps_key)
+        val params = "$origin&$dest&key=$apikey"
+        return "https://maps.googleapis.com/maps/api/directions/json?$params"
+    }
+
+    private fun decodePoly(encoded: String): List<LatLng> {
+        val poly = ArrayList<LatLng>()
+        var index = 0
+        val len = encoded.length
+        var lat = 0
+        var lng = 0
+
+        while (index < len) {
+            var b: Int
+            var shift = 0
+            var result = 0
+            do {
+                b = encoded[index++].code - 63
+                result = result or (b and 0x1f shl shift)
+                shift += 5
+            } while (b >= 0x20)
+            val dlat = if (result and 1 != 0) (result shr 1).inv() else result shr 1
+            lat += dlat
+
+            shift = 0
+            result = 0
+            do {
+                b = encoded[index++].code - 63
+                result = result or (b and 0x1f shl shift)
+                shift += 5
+            } while (b >= 0x20)
+            val dlng = if (result and 1 != 0) (result shr 1).inv() else result shr 1
+            lng += dlng
+
+            val p = LatLng(lat.toDouble() / 1E5,
+                lng.toDouble() / 1E5)
+            poly.add(p)
+        }
+
+        return poly
+    }
+
+
+
 
 
     private fun setPlacemarks() {
@@ -245,3 +348,5 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerD
     }
 
 }
+
+
