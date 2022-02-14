@@ -75,6 +75,10 @@ class StartActivity : AppCompatActivity() {
 
     binding.initlist.setOnClickListener(){
 
+        val launcherIntent = Intent(this, RouteListActivity::class.java)
+        startActivity(launcherIntent)
+
+        /*
         Toast.makeText(this, "List filled", Toast.LENGTH_LONG).show()
 
         app = application as MainApp
@@ -88,7 +92,7 @@ class StartActivity : AppCompatActivity() {
 
         // first try, should add a Init List of places. Other option is the Places Google API
             setResult(RESULT_OK)
-
+        **/
         }
 
 

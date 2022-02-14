@@ -26,7 +26,7 @@ class PlacemarkActivity : AppCompatActivity() {
     var placemark = PlacemarkModel()
     lateinit var app : MainApp
     private lateinit var imageIntentLauncher: ActivityResultLauncher<Intent> //embedding image choosing activity
-    private lateinit var mapIntentLauncher: ActivityResultLauncher<Intent> //embedding google maps activity
+    private lateinit var mapIntentLauncher: ActivityResultLauncher<Intent> //going to google maps activity
     private var edit = false // flag for a placemark, will be changed when it goes in the edit aka hasExtra if
 
     override fun onCreate(savedInstanceState: Bundle?) {

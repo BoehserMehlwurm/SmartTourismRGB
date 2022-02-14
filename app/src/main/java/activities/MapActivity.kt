@@ -29,7 +29,6 @@ import models.Locationsave
 import models.PlacemarkModel
 import org.jetbrains.anko.async
 import org.jetbrains.anko.uiThread
-import timber.log.Timber
 import timber.log.Timber.i
 import java.net.URL
 
@@ -57,14 +56,18 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerD
         setContentView(binding.root)
         //setContentView(R.layout.activity_map)
 
+
+        //handling the intents. Coming from PlacemarkActivity, StartActivity or RouteListActivity
         if(intent.hasExtra("location")) {
             location = intent.extras?.getParcelable<Locationsave>("location")!!
-            Toast.makeText(this, "Select the location via Drag and Drop", Toast.LENGTH_LONG).show()
-        }else{
-            binding.btnSet.setText(R.string.back_map)
-            //placemark = intent.extras?.getParcelable<PlacemarkModel>("placemark")!!
-        }
-
+            Toast.makeText(this, "Select the location via Drag and Drop", Toast.LENGTH_LONG).show()}
+        if(intent.hasExtra("startroute")){
+            location = intent.extras?.getParcelable<Locationsave>("startroute")!!
+            location.tag=1}
+        if(intent.hasExtra("endroute")) {
+            location = intent.extras?.getParcelable<Locationsave>("endroute")!!
+            location.tag = 2}
+        if(intent.extras==null){binding.btnSet.setText(R.string.back_map)}
 
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
@@ -77,6 +80,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerD
             i("inside Map / Set Position Location"+location.lat.toString())
             val resultIntent = Intent()
             resultIntent.putExtra("location", location)
+            resultIntent.putExtra("startroute", location)
+            resultIntent.putExtra("endroute", location)
             setResult(RESULT_OK, resultIntent)
             finish()
         }
@@ -100,7 +105,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerD
 
         //map.addMarker(options)
         //map.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, location.zoom))
-        if(intent.hasExtra("location")) {
+        if(intent.hasExtra("location")||intent.hasExtra("startroute")||intent.hasExtra("endroute")) {
         map.setOnMarkerDragListener(this)
         map.setOnMarkerClickListener(this)
         }
@@ -265,7 +270,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerD
                     //.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue))
                 i("MapActivity: currentLatLng: $currentLatLng")
 
-                if(intent.hasExtra("location")){
+                if(intent.hasExtra("location")||intent.hasExtra("startroute")||intent.hasExtra("endroute")){
                     map.addMarker(options)
                 }
 
@@ -274,7 +279,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerD
 
             }
         }.addOnFailureListener{
-            Timber.i("Location not found")
+            i("Location not found")
         }
     }
 
@@ -292,7 +297,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerD
         location.lng = marker.position.longitude
         location.zoom = map.cameraPosition.zoom
         location.address = getAddress(marker)
-        Timber.i(location.lat.toString()+location.lng.toString())
+        i(location.lat.toString()+location.lng.toString())
     }
 
     override fun onMarkerDragStart(marker: Marker) {
@@ -309,12 +314,20 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerD
 
         i("inside Map / onBackPressed Location"+location.lat.toString())
 
+
+
         val resultIntent = Intent()
         resultIntent.putExtra("location", location)
+        resultIntent.putExtra("startroute", location)
+        resultIntent.putExtra("endroute", location)
         setResult(Activity.RESULT_OK, resultIntent)
         finish()
         super.onBackPressed()
+
     }
+
+
+
 
     override fun onMarkerClick(marker: Marker): Boolean {
         //val loc = LatLng(location.lat, location.lng)

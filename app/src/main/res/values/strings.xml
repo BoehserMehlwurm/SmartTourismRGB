@@ -4,7 +4,7 @@
     <string name="button_StartApplication">Landmarks</string>
     <string name="button_arexperience">AR Experience</string>
     <string name="seeplacemarksmap">Show all spots</string>
-    <string name="initlist">Initial spots</string>
+    <string name="initlist">Routing</string>
     <string name="menu_info">Info</string>
     <string name="imagergb_descr">Picture with the skyline of Regensburg</string>
     <!-- Placemark List and Placemark Activity   -->
@@ -31,7 +31,13 @@
     <string name="back_map">Back</string>
     <!-- Splash Screen   -->
     <string name="regensburg_smart_tourism">Regensburg Smart Tourism</string>
-    <string name="button_takephoto">Take picture</string>
+    <!-- Route Screen   -->
+    <string name="start_location_will_be_displayed">Start Location will be displayed</string>
+    <string name="destination_location_will_be_displayed">Destination Location will be displayed</string>
+    <string name="start_button">Start</string>
+    <string name="end_button">End</string>
+    <!-- New Ones, not classified yet   -->
     <string name="base_url">https://maps.googleapis.com</string>
-
+    <string name="button_takephoto">Take picture</string>
+    <string name="begin_routeBtn">Begin Route</string>
 </resources>
