@@ -7,7 +7,7 @@ import com.google.gson.reflect.TypeToken
 import helpers.exists
 import helpers.read
 import helpers.write
-import timber.log.Timber
+import timber.log.Timber.i
 import java.lang.reflect.Type
 import java.util.*
 
@@ -73,7 +73,7 @@ class PlacemarkJSONStore(private val context: Context) : PlacemarkStore {
     }
 
     private fun logAll() {
-        placemarks.forEach { Timber.i("$it") }
+        placemarks.forEach { i("$it") }
     }
 }
 

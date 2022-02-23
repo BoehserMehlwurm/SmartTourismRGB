@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import com.example.smarttourismrgb.R
 import com.example.smarttourismrgb.databinding.ActivityStartBinding
@@ -74,6 +75,12 @@ class StartActivity : AppCompatActivity() {
 
     binding.initlist.setOnClickListener(){
 
+        val launcherIntent = Intent(this, RouteListActivity::class.java)
+        startActivity(launcherIntent)
+
+        /*
+        Toast.makeText(this, "List filled", Toast.LENGTH_LONG).show()
+
         app = application as MainApp
         i("Init Button pressed")
             placemark.title = "Init Landmark"
@@ -85,7 +92,7 @@ class StartActivity : AppCompatActivity() {
 
         // first try, should add a Init List of places. Other option is the Places Google API
             setResult(RESULT_OK)
-
+        **/
         }
 
 

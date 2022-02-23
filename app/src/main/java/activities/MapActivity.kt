@@ -1,38 +1,39 @@
 package activities
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.drawable.Icon
+import android.graphics.Color
 import android.location.Address
 import android.location.Geocoder
 import android.location.Location
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
+import com.beust.klaxon.*
 import com.example.smarttourismrgb.R
 import com.example.smarttourismrgb.databinding.ActivityMapBinding
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.google.android.gms.maps.model.*
-import com.squareup.picasso.Picasso
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.PolylineOptions
 import main.MainApp
 import models.Locationsave
 import models.PlacemarkModel
-import timber.log.Timber
-import timber.log.Timber.*
+import org.jetbrains.anko.async
+import org.jetbrains.anko.uiThread
+import timber.log.Timber.i
+import java.net.URL
 
 
-
-
-class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerDragListener, GoogleMap.OnMarkerClickListener {
+class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerDragListener, GoogleMap.OnMarkerClickListener{
 
     private lateinit var map: GoogleMap
     private lateinit var binding: ActivityMapBinding
@@ -42,7 +43,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerD
     //lateinit var app: MainApp
     var placemarker = PlacemarkModel()
 
-
+    private lateinit var fkip: LatLng
+    private lateinit var monas: LatLng
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,14 +56,18 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerD
         setContentView(binding.root)
         //setContentView(R.layout.activity_map)
 
+
+        //handling the intents. Coming from PlacemarkActivity, StartActivity or RouteListActivity
         if(intent.hasExtra("location")) {
             location = intent.extras?.getParcelable<Locationsave>("location")!!
-            Toast.makeText(this, "Select the location via Drag and Drop", Toast.LENGTH_LONG).show()
-        }else{
-            binding.btnSet.setText(R.string.back_map)
-            //placemark = intent.extras?.getParcelable<PlacemarkModel>("placemark")!!
-        }
-
+            Toast.makeText(this, "Select the location via Drag and Drop", Toast.LENGTH_LONG).show()}
+        if(intent.hasExtra("startroute")){
+            location = intent.extras?.getParcelable<Locationsave>("startroute")!!
+            location.tag=1}
+        if(intent.hasExtra("endroute")) {
+            location = intent.extras?.getParcelable<Locationsave>("endroute")!!
+            location.tag = 2}
+        if(intent.extras==null){binding.btnSet.setText(R.string.back_map)}
 
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
@@ -74,6 +80,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerD
             i("inside Map / Set Position Location"+location.lat.toString())
             val resultIntent = Intent()
             resultIntent.putExtra("location", location)
+            resultIntent.putExtra("startroute", location)
+            resultIntent.putExtra("endroute", location)
             setResult(RESULT_OK, resultIntent)
             finish()
         }
@@ -97,7 +105,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerD
 
         //map.addMarker(options)
         //map.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, location.zoom))
-        if(intent.hasExtra("location")) {
+        if(intent.hasExtra("location")||intent.hasExtra("startroute")||intent.hasExtra("endroute")) {
         map.setOnMarkerDragListener(this)
         map.setOnMarkerClickListener(this)
         }
@@ -162,7 +170,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerD
                     //.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue))
                 i("MapActivity: currentLatLng: $currentLatLng")
 
-                if(intent.hasExtra("location")){
+                if(intent.hasExtra("location")||intent.hasExtra("startroute")||intent.hasExtra("endroute")){
                     map.addMarker(options)
                 }
 
@@ -171,7 +179,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerD
 
             }
         }.addOnFailureListener{
-            Timber.i("Location not found")
+            i("Location not found")
         }
     }
 
@@ -182,6 +190,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerD
     }
 
     override fun onMarkerDrag(marker: Marker) {
+        getAddress(marker)
     }
 
     override fun onMarkerDragEnd(marker: Marker) {
@@ -189,7 +198,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerD
         location.lng = marker.position.longitude
         location.zoom = map.cameraPosition.zoom
         location.address = getAddress(marker)
-        Timber.i(location.lat.toString()+location.lng.toString())
+        i(location.lat.toString()+location.lng.toString())
     }
 
     override fun onMarkerDragStart(marker: Marker) {
@@ -202,16 +211,26 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerD
 
     }
 
+
+
     override fun onBackPressed() {
 
         i("inside Map / onBackPressed Location"+location.lat.toString())
 
+
+
         val resultIntent = Intent()
         resultIntent.putExtra("location", location)
+        resultIntent.putExtra("startroute", location)
+        resultIntent.putExtra("endroute", location)
         setResult(Activity.RESULT_OK, resultIntent)
         finish()
         super.onBackPressed()
+
     }
+
+
+
 
     override fun onMarkerClick(marker: Marker): Boolean {
         //val loc = LatLng(location.lat, location.lng)
@@ -244,4 +263,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerD
     return addressText
     }
 
+
+
 }
+
+
