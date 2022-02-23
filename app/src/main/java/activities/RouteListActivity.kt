@@ -3,9 +3,8 @@ package activities
 import adapters.PlacemarkAdapter
 import adapters.PlacemarkListener
 import android.content.Intent
-import android.location.Location
 import android.os.Bundle
-import android.os.Parcelable
+import android.view.View
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -13,11 +12,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 
 import com.example.smarttourismrgb.databinding.ActivityRouteListBinding
 import com.google.android.gms.maps.model.LatLng
-import kotlinx.parcelize.Parcelize
 
 import main.MainApp
 import models.Locationsave
 import models.PlacemarkModel
+import models.Routing
 import timber.log.Timber.i
 
 
@@ -97,14 +96,17 @@ class RouteListActivity: AppCompatActivity(), PlacemarkListener {
 
         }
 
-        //if(startlatlng==null||destinationlatlng==null){
+
         //noch einbauen, dass der Button erst funktioniert wenn die var gefüllt sind }
 
+
         binding.beginrouteBtn.setOnClickListener() {
+
+            val routingAR = Routing(routestartlatlng = startinglatlng, routedestinationlatlng = destinationlatlng)
+
             i("AR Experience pressed")
             val intent = Intent(this, ArActivity::class.java)
-                .putExtra("startroutecoords", startinglatlng)
-                .putExtra("destinationroutecoords", destinationlatlng)
+                .putExtra("routingAR", routingAR)
             startActivity(intent)
         }
 
@@ -146,7 +148,7 @@ class RouteListActivity: AppCompatActivity(), PlacemarkListener {
 
                             startinglatlng = LatLng(placemark.lat, placemark.lng)
                             binding.startinfo.text = placemark.address
-                            }else{
+                            }else{ //better with tag==2, but for the moment IO
                             val location = result.data!!.extras?.getParcelable<Locationsave>("endroute")!!
                             i("Location == $location")
                             placemark.lat = location.lat
@@ -155,7 +157,11 @@ class RouteListActivity: AppCompatActivity(), PlacemarkListener {
                             placemark.address = location.address
 
                             destinationlatlng = LatLng(placemark.lat,placemark.lng)
-                            binding.destinationinfo.text = placemark.address}
+                            binding.destinationinfo.text = placemark.address
+
+                            binding.beginrouteBtn.visibility = View.VISIBLE //let see Start Button after Destination was filled in
+                            }
+
 
                         } // end of if
                     }

@@ -22,6 +22,7 @@ import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import com.beust.klaxon.*
 import com.example.smarttourismrgb.R
 import com.example.smarttourismrgb.databinding.ActivityArBinding
 import com.example.smarttourismrgb.databinding.ActivityArBinding.inflate
@@ -31,6 +32,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.ar.sceneform.AnchorNode
@@ -40,12 +42,17 @@ import com.google.ar.sceneform.Scene
 import com.google.ar.sceneform.math.Quaternion
 import com.google.maps.android.PolyUtil
 import main.MainApp
+import models.Locationsave
 import models.PlacemarkModel
+import models.Routing
+import org.jetbrains.anko.async
+import org.jetbrains.anko.uiThread
 import org.json.JSONObject
 import timber.log.Timber
 //import models.Place
 //import models.getPositionVector
 import timber.log.Timber.*
+import java.net.URL
 import kotlin.math.*
 
 class ArActivity : AppCompatActivity(), SensorEventListener {
@@ -88,6 +95,8 @@ class ArActivity : AppCompatActivity(), SensorEventListener {
     private var isArPlaced = false
     private lateinit var camera: Camera
     private lateinit var scene: Scene
+    var route = Routing()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -113,6 +122,7 @@ class ArActivity : AppCompatActivity(), SensorEventListener {
         //scene = arFragment.arSceneView.scene!!
         //camera = scene.camera
 
+        route = intent.extras?.getParcelable<Routing>("routingAR")!!
 
         setUpAr()
         setUpMaps()
@@ -189,10 +199,105 @@ class ArActivity : AppCompatActivity(), SensorEventListener {
 
             getCurrentLocation()
             setPlacemarks(anchorNode)
+
+
+            val routestart = route.routestartlatlng
+            val routedestination = route.routedestinationlatlng
+            map.addMarker(MarkerOptions().position(routestart!!))
+            map.addMarker(MarkerOptions().position(routedestination!!))
+
+// Declare polyline object and set up color and width
+            val options = PolylineOptions()
+            options.color(Color.RED)
+            options.width(5f)
+
+            // build URL to call API
+            val url = getURL(routestart, routedestination)
+
+            async {
+                // Connect to URL, download content and convert into string asynchronously
+                val result = URL(url).readText()
+                uiThread {
+
+
+                    // When API call is done, create parser and convert into JsonObjec
+                    val parser = Parser()
+                    val stringBuilder: StringBuilder = StringBuilder(result)
+                    val json: JsonObject = parser.parse(stringBuilder) as JsonObject
+
+
+                    // get to the correct element in JsonObject
+                    val routes = json.array<JsonObject>("routes")!!
+                    val legs = routes[0]["legs"] as JsonArray<JsonObject>
+                    val points = legs[0]["steps"] as JsonArray<JsonObject>
+
+
+                    // For every element in the JsonArray, decode the polyline string and pass all points to a List
+                    val polypts =
+                        points.flatMap { decodePoly(it.obj("polyline")?.string("points")!!) }
+                    i("polypts ${points.flatMap {decodePoly(it.obj("polyline")?.string("points")!!) }}")
+                    // inside the log, points that could be used for AR navigation
+
+                    // Add  points to polyline and bounds
+                    options.add(routestart)
+                    for (point in polypts) options.add(point)
+                    options.add(routedestination)
+
+                    map.addPolyline(options)
+                    map.moveCamera(CameraUpdateFactory.newLatLng(routestart))
+
+
+                }
+            }
         }
 
     }
 
+    private fun getURL(from : LatLng, to : LatLng) : String {
+        val origin = "origin=" + from.latitude + "," + from.longitude
+        val dest = "destination=" + to.latitude + "," + to.longitude
+        //val sensor = "sensor=false"
+        val apikey = getString(R.string.google_maps_key)
+        val params = "$origin&$dest&key=$apikey"
+        return "https://maps.googleapis.com/maps/api/directions/json?$params"
+    }
+
+    private fun decodePoly(encoded: String): List<LatLng> {
+        val poly = ArrayList<LatLng>()
+        var index = 0
+        val len = encoded.length
+        var lat = 0
+        var lng = 0
+
+        while (index < len) {
+            var b: Int
+            var shift = 0
+            var result = 0
+            do {
+                b = encoded[index++].code - 63
+                result = result or (b and 0x1f shl shift)
+                shift += 5
+            } while (b >= 0x20)
+            val dlat = if (result and 1 != 0) (result shr 1).inv() else result shr 1
+            lat += dlat
+
+            shift = 0
+            result = 0
+            do {
+                b = encoded[index++].code - 63
+                result = result or (b and 0x1f shl shift)
+                shift += 5
+            } while (b >= 0x20)
+            val dlng = if (result and 1 != 0) (result shr 1).inv() else result shr 1
+            lng += dlng
+
+            val p = LatLng(lat.toDouble() / 1E5,
+                lng.toDouble() / 1E5)
+            poly.add(p)
+        }
+
+        return poly
+    }
 
 
 
@@ -222,6 +327,14 @@ class ArActivity : AppCompatActivity(), SensorEventListener {
 
 
         for (marker in markerlist) {
+            if (ActivityCompat.checkSelfPermission(this,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                    arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                    MapActivity.LOCATION_PERMISSION_REQUEST_CODE
+                )
+                return
+            }
             fusedLocationClient.lastLocation.addOnSuccessListener { location ->
 
 

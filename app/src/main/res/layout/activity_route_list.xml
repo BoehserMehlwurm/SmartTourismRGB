@@ -70,6 +70,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="180dp"
-        android:text="@string/begin_routeBtn" />
+        android:text="@string/begin_routeBtn"
+        android:visibility="invisible"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
