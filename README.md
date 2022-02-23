@@ -25,7 +25,7 @@ Anschließend:
  Auch wenn Checks für Geräteberechtigungen in der App eingebaut sind. Bei Problemen diese manuell auf dem Smartphone vergeben. (Standort / Kamera / Ordner)
  Zuletzt keinen Dark Mode am Smartphone benutzen.
  
- Zum Testen muss ein Google API Code vorhanden sein mit folgenden aktivierten API's 
+ Zum Testen muss ein Google API Code vorhanden sein mit folgenden aktivierten API's. (siehe https://developers.google.com/maps/documentation/android-sdk/start?hl=de)
  - Directions API
  - Maps SDK for Android
  - Geocoding API
