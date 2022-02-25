@@ -1,29 +1,16 @@
 package activities
 
 import android.content.Intent
-import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
+import androidx.appcompat.app.AppCompatActivity
 import com.example.smarttourismrgb.R
 import com.example.smarttourismrgb.databinding.ActivityStartBinding
-import com.google.android.material.snackbar.Snackbar
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.google.gson.reflect.TypeToken
-import com.squareup.picasso.Picasso
 import main.MainApp
-import models.Locationsave
 import models.PlacemarkModel
-import models.UriParser
 import timber.log.Timber
 import timber.log.Timber.i
-import java.io.File
-import java.lang.reflect.Type
-import java.util.ArrayList
 
 class StartActivity : AppCompatActivity() {
     private lateinit var binding: ActivityStartBinding

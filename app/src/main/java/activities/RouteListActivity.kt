@@ -5,14 +5,13 @@ import adapters.PlacemarkListener
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-
 import com.example.smarttourismrgb.databinding.ActivityRouteListBinding
 import com.google.android.gms.maps.model.LatLng
-
 import main.MainApp
 import models.Locationsave
 import models.PlacemarkModel
@@ -51,6 +50,30 @@ class RouteListActivity: AppCompatActivity(), PlacemarkListener {
         }
 
         app = application as MainApp
+
+        if(intent?.action == Intent.ACTION_SEND) {
+            //val incomingstart = intent?.data
+            val incomingdestination = intent?.data.toString()
+            Toast.makeText(this,"$logtag Intent: $incomingdestination", Toast.LENGTH_LONG).show()
+            i("incomingdestination, $incomingdestination")
+            val parts = incomingdestination.split("geo:",",")
+            i("Parts, $parts")
+            val incomingpartone = parts[0]
+            val incomingparttwo = parts[1]
+            val incomingpartthree = parts[2]
+            i("Part 1, $incomingpartone")
+            i("Part 2, $incomingparttwo")
+            i("Part 3, $incomingpartthree")
+
+            placemark.lat = incomingparttwo.toDouble()
+            placemark.lng = incomingpartthree.toDouble()
+
+            destinationlatlng = LatLng(placemark.lat,placemark.lng)
+            binding.destinationinfo.text = incomingdestination
+        }
+
+
+        //if(intent.extras==null){binding.btnSet.setText(R.string.back_map)}
 
 
 
@@ -159,9 +182,12 @@ class RouteListActivity: AppCompatActivity(), PlacemarkListener {
                             destinationlatlng = LatLng(placemark.lat,placemark.lng)
                             binding.destinationinfo.text = placemark.address
 
-                            binding.beginrouteBtn.visibility = View.VISIBLE //let see Start Button after Destination was filled in
+
                             }
 
+                        if (destinationlatlng != null){
+                            binding.beginrouteBtn.visibility = View.VISIBLE //let see Start Button after Destination was filled in
+                        }
 
                         } // end of if
                     }
@@ -171,5 +197,7 @@ class RouteListActivity: AppCompatActivity(), PlacemarkListener {
             }
     }
 }
+
+
 
 

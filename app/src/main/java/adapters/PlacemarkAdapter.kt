@@ -4,8 +4,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.smarttourismrgb.databinding.CardPlacemarkBinding
-import com.squareup.picasso.Picasso
 import models.PlacemarkModel
+import com.squareup.picasso.*
 
 interface PlacemarkListener {
     fun onPlacemarkClick(placemark: PlacemarkModel)
